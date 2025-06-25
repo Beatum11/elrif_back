@@ -4,31 +4,31 @@ from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from typing import Optional
 import uuid
 from datetime import date, datetime
-from src.db.base import Base
+from src.infrastructure.db.base import Base
 import enum
 
 
-class User(Base):
+class Profile(Base):
 
-    __tablename__ = 'users'
+    __tablename__ = 'profiles'
 
 
     id: Mapped[uuid.UUID] = mapped_column(PG_UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True)
+    external_id: Mapped[str] = mapped_column(String, unique=True)
+
     name: Mapped[str] = mapped_column(String(255))
     surname: Mapped[str] = mapped_column(String(255))
 
     email: Mapped[str] = mapped_column(String, unique=True)
     #потом изменить
     birthday: Mapped[date] = mapped_column(Date, nullable=True)
-    tel_number: Mapped[str] = mapped_column(String)
-
-    password_hash: Mapped[str] = mapped_column(String)
+    
     wallet_address: Mapped[str] = mapped_column(String, nullable=False)
 
     additional_info: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     talent_profile: Mapped[Optional['Talent']] = relationship(
-                                                        back_populates='user',
+                                                        back_populates='profile',
                                                         uselist=False,
                                                         cascade='all, delete-orphan') 
     
@@ -41,7 +41,7 @@ class Talent(Base):
 
     __tablename__ = 'talents'
 
-    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('users.id'), index=True,
+    profile_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('profiles.id'), index=True,
                                                primary_key=True)
     
     nickname: Mapped[str] = mapped_column(String, nullable=False)
@@ -51,7 +51,7 @@ class Talent(Base):
     project_price: Mapped[float] = mapped_column(Float, nullable=False)
     
     role: Mapped[str] = mapped_column(String, nullable=False)
-    user: Mapped["User"] = relationship(back_populates="talent_profile")
+    profile: Mapped["Profile"] = relationship(back_populates="talent_profile")
 
     managed_team_id: Mapped[Optional[uuid.UUID]] = mapped_column(PG_UUID(as_uuid=True), ForeignKey('teams.id'), nullable=True)
     managed_team: Mapped[Optional["Team"]] = relationship(

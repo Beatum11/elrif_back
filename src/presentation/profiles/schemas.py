@@ -6,35 +6,33 @@ import uuid
 
 # add Field later
 
-class UserBase(BaseModel):
+class ProfileBase(BaseModel):
     name: str
     surname: str
     birthday: Optional[date] = None
-    tel_number: str
     email: EmailStr
     additional_info: Optional[str] = None
     wallet_address: str
 
-class UserCreate(UserBase): 
-    password: str
+class ProfileCreate(ProfileBase): 
+    external_id: str
 
 
-class UserUpdate(BaseModel):
+class ProfileUpdate(BaseModel):
     name: Optional[str]
     surname: Optional[str]
     birthday: Optional[date] = None
-    tel_number: Optional[str]
     additional_info: Optional[str] = None
     wallet_address: Optional[str] = None
 
     
-class UserResponse(UserBase):
+class ProfileResponse(ProfileBase):
     id: uuid.UUID
 
     model_config = ConfigDict(from_attributes=True)
 
 
-class UserInTalent(BaseModel):
+class ProfileInTalent(BaseModel):
     name: str
     surname: str
     email: EmailStr
@@ -60,7 +58,7 @@ class TalentUpdate(BaseModel):
 
     
 class TalentResponse(Talent):
-    user_id: uuid.UUID
-    user: UserInTalent
+    profile_id: uuid.UUID
+    profile: ProfileInTalent
 
     model_config = ConfigDict(from_attributes=True)

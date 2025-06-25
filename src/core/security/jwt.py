@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 import uuid
 from src.config import settings
 
-def create_jwt_token(user_data: dict,
+def create_jwt_token(sub: str,
                      expires_delta: timedelta,
                      token_type: str = 'access'):
     
@@ -13,7 +13,7 @@ def create_jwt_token(user_data: dict,
     secret = settings.JWT_SECRET
 
     payload: dict = {
-        "user": user_data,
+        "sub": sub,
         "exp": expire,
         "iat": now,
         "jti": str(uuid.uuid4()),
@@ -22,13 +22,15 @@ def create_jwt_token(user_data: dict,
     
     return jwt.encode(payload, secret, settings.JWT_ALGO)
 
-def create_refresh_token(user_data: dict):
+def create_refresh_token(sub: str):
     expires_delta = timedelta(days=30)
-    return create_jwt_token(user_data, expires_delta, token_type='refresh')
+    return create_jwt_token(sub=sub, 
+                            expires_delta=expires_delta, 
+                            token_type='refresh')
 
-def create_access_token(user_data: dict):
+def create_access_token(sub: str):
     expires_delta = timedelta(minutes=15)
-    return create_jwt_token(user_data, expires_delta)
+    return create_jwt_token(sub=sub, expires_delta=expires_delta)
 
 def decode_token(token: str) -> dict:
     return jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGO])

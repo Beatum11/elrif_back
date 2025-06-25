@@ -1,7 +1,6 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from src.config import settings
-from src.db.models import Team, User, Talent
-from src.db.base import Base
+from src.infrastructure.db.base import Base
 
 engine = create_async_engine(
     url=settings.DATABASE_URL,
@@ -19,6 +18,6 @@ async def close_db():
     await engine.dispose()
 
 
-async def get_session():
-    async with async_session() as session:
-        yield session
+async def get_session() -> AsyncSession:
+    return async_session()
+    

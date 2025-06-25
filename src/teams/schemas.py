@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
 from typing import List
 import uuid
-from src.users.schemas import TalentResponse
+from src.presentation.profiles.schemas import TalentResponse
 
 class TeamBase(BaseModel):
     name: str = Field(..., min_length=3, max_length=255)
