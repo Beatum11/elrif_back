@@ -41,31 +41,33 @@ class Talent(Base):
 
     __tablename__ = 'talents'
 
-    profile_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('profiles.id'), index=True,
-                                               primary_key=True)
+    id: Mapped[uuid.UUID] = mapped_column(PG_UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, index=True)
+
+    profile_id: Mapped[uuid.UUID] = mapped_column(ForeignKey('profiles.id'), unique=True, index=True)
     
-    nickname: Mapped[str] = mapped_column(String, nullable=False)
+    # nickname: Mapped[str] = mapped_column(String, nullable=False)
     bio: Mapped[str] = mapped_column(Text, nullable=False)
 
     portfolio_links: Mapped[Optional[list[str]]] = mapped_column(JSON, nullable=True)
     project_price: Mapped[float] = mapped_column(Float, nullable=False)
     
     role: Mapped[str] = mapped_column(String, nullable=False)
+    rating: Mapped[int] = mapped_column(Integer, nullable=False)
     profile: Mapped["Profile"] = relationship(back_populates="talent_profile")
 
-    managed_team_id: Mapped[Optional[uuid.UUID]] = mapped_column(PG_UUID(as_uuid=True), ForeignKey('teams.id'), nullable=True)
-    managed_team: Mapped[Optional["Team"]] = relationship(
-        "Team",
-        back_populates='manager',
-        foreign_keys=[managed_team_id]  
-    )
+    # managed_team_id: Mapped[Optional[uuid.UUID]] = mapped_column(PG_UUID(as_uuid=True), ForeignKey('teams.id'), nullable=True)
+    # managed_team: Mapped[Optional["Team"]] = relationship(
+    #     "Team",
+    #     back_populates='manager',
+    #     foreign_keys=[managed_team_id]  
+    # )
 
-    current_team_id: Mapped[Optional[uuid.UUID]] = mapped_column(PG_UUID(as_uuid=True), ForeignKey('teams.id'), nullable=True)
-    current_team: Mapped[Optional["Team"]] = relationship(
-        "Team",
-        back_populates='current_members',
-        foreign_keys=[current_team_id]
-    )
+    # current_team_id: Mapped[Optional[uuid.UUID]] = mapped_column(PG_UUID(as_uuid=True), ForeignKey('teams.id'), nullable=True)
+    # current_team: Mapped[Optional["Team"]] = relationship(
+    #     "Team",
+    #     back_populates='current_members',
+    #     foreign_keys=[current_team_id]
+    # )
 
 
 

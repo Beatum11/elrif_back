@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from src.infrastructure.db.main import init_db, close_db
 from src.presentation.auth.auth_routes import router as auth_router
 from src.presentation.profiles.profile_routes import router as profile_router
+from src.presentation.talents.routes import router as talent_router
 from src.logger import logger
 
 version = "0.1.0"
@@ -27,6 +28,7 @@ async def root():
     return {"message": "Hello World"}
 
 app.include_router(profile_router, prefix=f"/api/{version}/profiles")
+app.include_router(talent_router, prefix=f"/api/{version}/talents")
 app.include_router(auth_router, prefix=f"/api/{version}/auth")
 
 

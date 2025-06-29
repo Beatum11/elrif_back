@@ -4,11 +4,11 @@ from src.application.uow import IUnitOfWork
 from src.domain.profiles.models import ProfileDomain
 from src.presentation.profiles.schemas import ProfileUpdate, ProfileCreate
 from datetime import datetime
+from typing import Optional
 
 class ProfileAppService:
     def __init__(self, uow: IUnitOfWork):
         self.uow = uow
-
 
 
     async def get_or_create_by_external_id(self, external_id: str) -> ProfileDomain:
@@ -45,9 +45,11 @@ class ProfileAppService:
             return added_profile
             
 
-    async def get_by_id(self, id: uuid.UUID) -> ProfileDomain:
+#NEED TO FIX THIS LATER
+    async def get_by_id(self, id: uuid.UUID) -> Optional[ProfileDomain]:
         async with self.uow as uow:
             return await uow.profiles.get_by_id(id)
+
         
     async def get_by_external_id(self, external_id: str) -> ProfileDomain:
         async with self.uow as uow:

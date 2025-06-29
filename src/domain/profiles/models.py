@@ -2,7 +2,7 @@ from __future__ import annotations
 import uuid
 from datetime import date
 from typing import Optional
-from src.domain.talents.models import Talent
+from src.domain.talents.models import TalentDomain
 
 
 class ProfileDomain:
@@ -15,7 +15,7 @@ class ProfileDomain:
         self.birthday: date = birthday
         self.wallet_address: str = wallet_address
         self.additional_info: str = additional_info
-        self.talent_profile: Optional[Talent] = None
+        self.talent_profile: Optional[TalentDomain] = None
         
 #TO-DO
 #change to kwargs
@@ -26,7 +26,6 @@ class ProfileDomain:
                 surname: str,
                 email: str,
                 birthday: date,
-                tel_number: str,
 
                 wallet_address: str,
                 additional_info: str) -> ProfileDomain:
@@ -51,4 +50,10 @@ class ProfileDomain:
             if key not in ["id", "external_id"]: 
                 setattr(self, key, value)
         return self
+    
+    def set_talent_profile(self, talent_profile: TalentDomain):
+        if not TalentDomain:
+            raise ValueError("Talent can't be null")
+        
+        self.talent_profile = talent_profile
     

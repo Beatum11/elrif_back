@@ -5,12 +5,15 @@ from src.presentation.profiles.schemas import ProfileCreate, ProfileResponse, Pr
 import uuid
 from src.logger import logger
 from src.application.dependencies import get_profile_service
+from typing import Optional
 
 router = APIRouter()
 
 
 
-@router.get('/', response_model=list[ProfileResponse])
+@router.get('/', 
+            response_model=Optional[list[ProfileResponse]], 
+            status_code=status.HTTP_200_OK)
 async def get_profiles(profile_service: ProfileAppService = Depends(get_profile_service)):
 
     """Returns all registered profiles"""
@@ -24,7 +27,9 @@ async def get_profiles(profile_service: ProfileAppService = Depends(get_profile_
                                 detail=f"Server error: {e}")
     
 
-@router.get('/{id}', response_model=ProfileResponse)
+@router.get('/{id}', 
+            response_model=ProfileResponse, 
+            status_code=status.HTTP_200_OK)
 async def get_profile(id: uuid.UUID,
                    profile_service: ProfileAppService = Depends(get_profile_service)):
     

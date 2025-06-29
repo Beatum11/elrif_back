@@ -52,14 +52,14 @@ class SQLAlchemyProfileRepository(IProfileRepository):
             return self._to_domain(user)
         return None
     
-    async def get_all(self) -> Optional[list[ProfileDomain]]:
+    async def get_all(self) -> list[ProfileDomain]:
         statement = select(Profile)
         res = await self.session.execute(statement)
         users = res.scalars().all()
 
         if users:
             return [self._to_domain(user) for user in users]
-        return None
+        return []
     
     
     async def get_by_email(self, email: str) -> Optional[ProfileDomain]:
@@ -80,14 +80,14 @@ class SQLAlchemyProfileRepository(IProfileRepository):
     
 #________________________________________________
 
-    async def add(self, profile: ProfileDomain):
+    async def add(self, profile: ProfileDomain) -> ProfileDomain:
         db_profile = self._to_db(profile)
         self.session.add(db_profile)
         await self.session.flush()
         return self._to_domain(db_profile)
 
 #check this impl.
-    async def update(self, profile: ProfileDomain):
+    async def update(self, profile: ProfileDomain) -> Optional[ProfileDomain]:
         statement = select(Profile).where(Profile.id == profile.id)
         res = await self.session.execute(statement)
         db_profile = res.scalars().first()
@@ -103,7 +103,7 @@ class SQLAlchemyProfileRepository(IProfileRepository):
         return None
 
 
-    async def delete(self, id: uuid.UUID):
+    async def delete(self, id: uuid.UUID) -> bool:
         statement = select(Profile).where(Profile.id == id)
         res = await self.session.execute(statement)
         db_profile = res.scalars().first()
