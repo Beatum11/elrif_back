@@ -1,10 +1,6 @@
-from fastapi import Depends
-from src.application.dependencies import get_profile_service
-from src.application.services.profile_service import ProfileAppService
-from src.domain.profiles.models import ProfileDomain
 import uuid
 from src.application.uow import IUnitOfWork
-from src.presentation.talents.schemas import TalentCreate, TalentUpdate
+from src.presentation.talents.schemas import TalentCreate, TalentPut, TalentPatch
 from src.domain.talents.models import TalentDomain
 from src.application.exceptions import TalentAlreadyExistsError, TalentNotFoundError, ProfileNotFoundError
 from typing import Optional
@@ -18,6 +14,7 @@ class TalentAppService():
                      talent_profile: TalentCreate) -> TalentDomain:
         
         async with self.uow as uow:
+            print('Зашел в сервис создания таланта')
             profile_domain = await uow.profiles.get_by_id(profile_id)
 
             if profile_domain is None:
@@ -33,11 +30,12 @@ class TalentAppService():
 
             profile_domain.set_talent_profile(talent_domain)
 
-            #sqlalchemy PROBABLY will update profile domain by it's own because of cascade
-            # profile = await uow.profiles.update(profile_domain)
+            profile = await uow.profiles.update(profile_domain)
+            
+            print(f'Вернувшийся профиль таланта: {profile.talent_profile}')
 
             await uow.commit()
-            return profile_domain.talent_profile
+            return profile.talent_profile
         
         
     async def get_by_id(self, profile_id: uuid.UUID) -> TalentDomain:
@@ -58,8 +56,8 @@ class TalentAppService():
             return await uow.talents.get_all()
             
 
-    async def udpate(self, profile_id: uuid.UUID, 
-                     talent_update: TalentUpdate) -> TalentDomain:
+    async def patch(self, profile_id: uuid.UUID, 
+                     talent_update: TalentPatch) -> TalentDomain:
         
         async with self.uow as uow:
             profile = await uow.profiles.get_by_id(profile_id)
@@ -76,8 +74,8 @@ class TalentAppService():
                 existing_talent.update_bio(new_data['bio'])
             if 'role' in new_data:
                 existing_talent.update_role(new_data['role'])
-            if 'portfolio_links' in new_data:
-                existing_talent.update_portfolio_links(new_data['portfolio_links'])
+            if 'portfolio_link' in new_data:
+                existing_talent.update_portfolio_link(new_data['portfolio_link'])
             if 'project_price' in new_data:
                 existing_talent.update_project_price(new_data['project_price'])
             if 'rating' in new_data:
@@ -86,10 +84,34 @@ class TalentAppService():
             await uow.commit()
             return existing_talent
         
+
+    async def put(self, profile_id: uuid.UUID, 
+                     talent_update: TalentPut) -> TalentDomain:
+        
+        async with self.uow as uow:
+            profile = await uow.profiles.get_by_id(profile_id)
+            if profile is None:
+                raise ProfileNotFoundError('There is no profile')
+
+            if not profile.talent_profile:
+                raise TalentNotFoundError('There is no talent profile')
+            
+            existing_talent = profile.talent_profile
+            
+            existing_talent.update_bio(talent_update.bio)
+            existing_talent.update_portfolio_link(talent_update.portfolio_link)
+            existing_talent.update_project_price(talent_update.project_price)
+            existing_talent.update_rating(talent_update.rating)
+            existing_talent.update_role(talent_update.role)
+
+            await uow.commit()
+            return existing_talent
+        
             
     async def delete(self, profile_id: uuid.UUID) -> None:
         async with self.uow as uow:
-            profile= await uow.profiles.get_by_id(profile_id)
+            print('in delete app service')
+            profile = await uow.profiles.get_by_id(profile_id)
             if profile is None:
                 raise ProfileNotFoundError('There is no profile')
             
@@ -97,4 +119,6 @@ class TalentAppService():
                 raise TalentNotFoundError('There is no talent profile')
 
             profile.talent_profile = None
+            print('before the update')
+            profile = await uow.profiles.update(profile)
             await uow.commit()

@@ -28,7 +28,6 @@ async def root():
     return {"message": "Hello World"}
 
 app.include_router(profile_router, prefix=f"/api/{version}/profiles")
-app.include_router(talent_router, prefix=f"/api/{version}/talents")
 app.include_router(auth_router, prefix=f"/api/{version}/auth")
 
 

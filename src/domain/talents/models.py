@@ -8,7 +8,7 @@ class TalentDomain:
                  profile_id: uuid.UUID,
                   bio: str, 
                  role: str, 
-                 portfolio_links: list[str],
+                 portfolio_link: str,
                  project_price: float = 0,
                  rating: int = 50):
         
@@ -16,7 +16,7 @@ class TalentDomain:
         self.profile_id = profile_id
         self.bio = bio
         self.role = role
-        self.portfolio_links = portfolio_links
+        self.portfolio_link = portfolio_link
         self.project_price = project_price
         self.rating = rating
 
@@ -24,7 +24,7 @@ class TalentDomain:
     def create(profile_id: uuid.UUID,
                 bio: str, 
                 role: str, 
-                portfolio_links: list[str],
+                portfolio_link: str,
                 project_price: float = 0,
                 rating: int = 50):
         
@@ -34,7 +34,7 @@ class TalentDomain:
             profile_id=profile_id,
             bio=bio,
             role=role,
-            portfolio_links=portfolio_links,
+            portfolio_link=portfolio_link,
             project_price=project_price,
             rating=rating
         )
@@ -49,8 +49,8 @@ class TalentDomain:
             raise ValueError("role can't be empty")
         self.role = role
 
-    def update_portfolio_links(self, portfolio_links: list[str]):
-        self.portfolio_links = portfolio_links
+    def update_portfolio_link(self, portfolio_link: str):
+        self.portfolio_link = portfolio_link
 
     def update_project_price(self, project_price: float):
         if project_price <= 0:

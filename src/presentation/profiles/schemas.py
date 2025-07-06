@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field, ConfigDict
+from pydantic import BaseModel,Field, ConfigDict
 from typing import Optional
 from datetime import date
 import uuid
@@ -10,22 +10,30 @@ class ProfileBase(BaseModel):
     name: str
     surname: str
     birthday: Optional[date] = None
-    email: EmailStr
+    email: str
     additional_info: Optional[str] = None
     wallet_address: str
-    avatar_url: Optional[str] = None
 
 class ProfileCreate(ProfileBase): 
     external_id: str
 
 
-class ProfileUpdate(BaseModel):
-    name: Optional[str]
-    surname: Optional[str]
+class ProfilePatch(BaseModel):
+    name: Optional[str] = None
+    surname: Optional[str] = None
     additional_info: Optional[str] = None
     wallet_address: Optional[str] = None
+    email: Optional[str] = None
 
-    
+
+class ProfilePut(BaseModel):
+    name: Optional[str]
+    surname: Optional[str]
+    additional_info: Optional[str]
+    wallet_address: Optional[str]
+    email: Optional[str]
+
+
 class ProfileResponse(ProfileBase):
     id: uuid.UUID
 
@@ -35,8 +43,7 @@ class ProfileResponse(ProfileBase):
 class ProfileInTalent(BaseModel):
     name: str
     surname: str
-    email: EmailStr
-    avatar_url: str
+    email: str
 
     model_config = ConfigDict(from_attributes=True)
 

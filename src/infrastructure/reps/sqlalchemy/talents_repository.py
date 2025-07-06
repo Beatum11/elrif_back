@@ -17,7 +17,7 @@ class SqlAlchemyTalentRepository(ITalentRepository):
             profile_id=talent.profile_id,
             bio=talent.bio,
             role=talent.role,
-            portfolio_links=talent.portfolio_links,
+            portfolio_link=talent.portfolio_link,
             project_price=talent.project_price,
             rating=talent.rating
         )

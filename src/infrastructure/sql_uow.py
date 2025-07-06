@@ -1,16 +1,14 @@
 from src.application.uow import IUnitOfWork
-from src.infrastructure.db.main import get_session
 #from src.domain.users.i_user_repository import IUserRepository  
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.infrastructure.reps.sqlalchemy.profiles.repository import SQLAlchemyProfileRepository
-from src.infrastructure.reps.sqlalchemy.talents.repository import SqlAlchemyTalentRepository
+from src.infrastructure.reps.sqlalchemy.profile_repository import SQLAlchemyProfileRepository
+from src.infrastructure.reps.sqlalchemy.talents_repository import SqlAlchemyTalentRepository
 
 class SqlAlchemyUnitOfWork(IUnitOfWork):
-    def __init__(self, session_factory = get_session):
-        self.session_factory = session_factory
+    def __init__(self, session: AsyncSession):
+        self.session = session
 
     async def __aenter__(self) -> IUnitOfWork:
-        self.session: AsyncSession = await self.session_factory()
         self.profiles = SQLAlchemyProfileRepository(self.session)
         self.talents = SqlAlchemyTalentRepository(self.session)
         return self
